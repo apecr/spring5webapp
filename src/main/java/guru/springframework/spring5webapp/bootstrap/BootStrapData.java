@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class BootStrapData implements CommandLineRunner {
@@ -26,27 +27,28 @@ public class BootStrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        Publisher pub = new Publisher("Publisher Example", "Rua Los Angeles 12 3E", "Pontevedra", "Spain", "36002");
+        publisherRepository.save(pub);
+
         Author erik = new Author("Erik", "Evans");
         Book ddd = new Book("Domain Driven Design", "123123");
         erik.getBooks().add(ddd);
         ddd.getAuthors().add(erik);
+        ddd.setPublisher(pub);
+        pub.getBooks().add(ddd);
 
+        authorRepository.save(erik);
+        bookRepository.save(ddd);
+        publisherRepository.save(pub);
 
         Author rod = new Author("Rod", "Johnson");
         Book noEJB = new Book("J2EE Development without EJB", "35465");
         rod.getBooks().add(noEJB);
         noEJB.getAuthors().add(rod);
-
-        Publisher pub = new Publisher("Publisher Example", "Rua Los Angeles 12 3E", "Pontevedra", "Spain", "36002");
-        ddd.setPublisher(pub);
         noEJB.setPublisher(pub);
-        pub.getBooks().addAll(Arrays.asList(ddd, noEJB));
 
-        authorRepository.save(erik);
-        bookRepository.save(ddd);
         authorRepository.save(rod);
         bookRepository.save(noEJB);
-        publisherRepository.save(pub);
 
         System.out.println("Started in BootStrap");
         System.out.println("Number of books: " + bookRepository.count());
